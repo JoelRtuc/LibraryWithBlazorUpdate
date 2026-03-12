@@ -1,0 +1,89 @@
+@page "/loans/details/{id:int}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Loan Details</PageTitle>
+
+<div class="container mt-4">
+    <h1>Loan Details</h1>
+
+    @if (loan == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Loan Information</h5>
+                        <hr />
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Library Item:</strong></div>
+                            <div class="col-sm-8">@loan.item?.title</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Member:</strong></div>
+                            <div class="col-sm-8">@loan.member?.memberName</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Loan Date:</strong></div>
+                            <div class="col-sm-8">@loan.loanDate.ToShortDateString()</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Due Date:</strong></div>
+                            <div class="col-sm-8">@loan.dueDate.ToShortDateString()</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Return Date:</strong></div>
+                            <div class="col-sm-8">@(loan.returnDate?.ToShortDateString() ?? "Not returned")</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Is Returned:</strong></div>
+                            <div class="col-sm-8">@(loan.isReturned ? "Yes" : "No")</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Is Overdue:</strong></div>
+                            <div class="col-sm-8">@(loan.isOverdue ? "Yes" : "No")</div>
+                        </div>
+
+                        <div class="mt-4">
+                            <NavLink class="btn btn-warning" href="@($"/loans/edit/{loan.Id}")">Edit</NavLink>
+                            <NavLink class="btn btn-danger" href="@($"/loans/delete/{loan.Id}")">Delete</NavLink>
+                            <NavLink class="btn btn-secondary" href="/loans">Back to List</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Loan loan;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loan = await Context.Loans
+            .Include(l => l.item)
+            .Include(l => l.member)
+            .FirstOrDefaultAsync(l => l.Id == Id);
+    }
+}

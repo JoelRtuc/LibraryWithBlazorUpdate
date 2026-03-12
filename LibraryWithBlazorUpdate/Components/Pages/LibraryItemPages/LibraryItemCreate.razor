@@ -1,0 +1,156 @@
+@page "/library-items/create"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Create Library Item</PageTitle>
+
+<div class="container mt-4">
+    <h1>Create New Library Item</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="itemType" class="form-label">Item Type</label>
+                <select id="itemType" @bind="selectedType" class="form-control">
+                    <option value="">-- Select Type --</option>
+                    <option value="Book">Book</option>
+                    <option value="Movie">Movie</option>
+                    <option value="Magazine">Magazine</option>
+                </select>
+            </div>
+
+            @if (!string.IsNullOrEmpty(selectedType))
+            {
+                <EditForm Model="formData" OnValidSubmit="HandleCreateItem">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <InputText id="title" @bind-Value="formData.Title" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <InputText id="author" @bind-Value="formData.Author" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <InputTextArea id="description" @bind-Value="formData.Description" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="publishedYear" class="form-label">Published Year</label>
+                        <InputNumber id="publishedYear" @bind-Value="formData.PublishedYear" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <InputCheckbox id="isAvailable" @bind-Value="formData.IsAvailable" class="form-check-input" />
+                        <label for="isAvailable" class="form-check-label">Is Available</label>
+                    </div>
+
+                    @if (selectedType == "Book")
+                    {
+                        <div class="mb-3">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <InputText id="isbn" @bind-Value="formData.ISBN" class="form-control" />
+                        </div>
+                    }
+                    else if (selectedType == "Movie")
+                    {
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Duration (minutes)</label>
+                            <InputNumber id="duration" @bind-Value="formData.Duration" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="movieType" class="form-label">Movie Type</label>
+                            <InputSelect id="movieType" @bind-Value="formData.MovieType" class="form-control">
+                                <option value="">-- Select Type --</option>
+                                <option value="DVD">DVD</option>
+                                <option value="BlueRay">BlueRay</option>
+                                <option value="VHS">VHS</option>
+                                <option value="Film">Film</option>
+                            </InputSelect>
+                        </div>
+                    }
+                    else if (selectedType == "Magazine")
+                    {
+                        <div class="mb-3">
+                            <label for="issue" class="form-label">Issue</label>
+                            <InputNumber id="issue" @bind-Value="formData.Issue" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Company</label>
+                            <InputText id="company" @bind-Value="formData.Company" class="form-control" />
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <NavLink class="btn btn-secondary" href="/library-items">Back to List</NavLink>
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedType = "";
+    private LibraryItemFormData formData = new();
+    private string message = "";
+
+    private class LibraryItemFormData
+    {
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string Description { get; set; }
+        public int PublishedYear { get; set; } = DateTime.Now.Year;
+        public bool IsAvailable { get; set; } = true;
+        public string ISBN { get; set; }
+        public int Duration { get; set; }
+        public string MovieType { get; set; }
+        public int Issue { get; set; }
+        public string Company { get; set; }
+    }
+
+    private async Task HandleCreateItem()
+    {
+        try
+        {
+            LibraryItem newItem = null;
+
+            if (selectedType == "Book")
+            {
+                newItem = new Book(formData.ISBN, formData.Title, formData.Description, formData.Author, formData.PublishedYear, formData.IsAvailable);
+            }
+            else if (selectedType == "Movie")
+            {
+                var mt = Movie.MovieType.DVD;
+                if (!string.IsNullOrEmpty(formData.MovieType)) Enum.TryParse(formData.MovieType, out mt);
+                newItem = new Movie(0, formData.Title, formData.Description, formData.Author, formData.PublishedYear, formData.IsAvailable, formData.Duration, mt);
+            }
+            else if (selectedType == "Magazine")
+            {
+                newItem = new Magazine(0, formData.Title, formData.Description, formData.Author, formData.PublishedYear, formData.IsAvailable, formData.Issue, formData.Company);
+            }
+
+            if (newItem != null)
+            {
+                Context.LibraryItems.Add(newItem);
+                await Context.SaveChangesAsync();
+                Navigation.NavigateTo("/library-items");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error creating item: {ex.Message}";
+        }
+    }
+}

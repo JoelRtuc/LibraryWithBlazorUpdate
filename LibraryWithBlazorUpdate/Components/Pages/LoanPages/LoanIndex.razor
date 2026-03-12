@@ -1,0 +1,73 @@
+@page "/loans"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Loans</PageTitle>
+
+<div class="container mt-4">
+    <h1>Loans</h1>
+    <p>
+        <NavLink class="btn btn-primary" href="/loans/create">Create New Loan</NavLink>
+    </p>
+
+    @if (loans == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (loans.Count == 0)
+    {
+        <p><em>No loans found.</em></p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Library Item</th>
+                    <th>Member</th>
+                    <th>Loan Date</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th>Is Returned</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in loans)
+                {
+                    <tr>
+                        <td>@loan.item?.title</td>
+                        <td>@loan.member?.memberName</td>
+                        <td>@loan.loanDate.ToShortDateString()</td>
+                        <td>@loan.dueDate.ToShortDateString()</td>
+                        <td>@(loan.returnDate?.ToShortDateString() ?? "Not returned")</td>
+                        <td>@(loan.isReturned ? "Yes" : "No")</td>
+                        <td>
+                            <NavLink class="btn btn-sm btn-info" href="@($"/loans/details/{loan.Id}")">Details</NavLink>
+                            <NavLink class="btn btn-sm btn-warning" href="@($"/loans/edit/{loan.Id}")">Edit</NavLink>
+                            <NavLink class="btn btn-sm btn-danger" href="@($"/loans/delete/{loan.Id}")">Delete</NavLink>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<Loan> loans;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loans = await Context.Loans
+            .Include(l => l.item)
+            .Include(l => l.member)
+            .ToListAsync();
+    }
+}

@@ -1,0 +1,79 @@
+@page "/library-items"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Library Items</PageTitle>
+
+<div class="container mt-4">
+    <h1>Library Items</h1>
+    <p>
+        <NavLink class="btn btn-primary" href="/library-items/create">Add New Item</NavLink>
+    </p>
+
+    @if (items == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (items.Count == 0)
+    {
+        <p><em>No library items found.</em></p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Published Year</th>
+                    <th>Available</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>@item.title</td>
+                        <td>@item.author</td>
+                        <td>@item.publishedYear</td>
+                        <td>@(item.isAvailable ? "Yes" : "No")</td>
+                        <td>@GetItemType(item)</td>
+                        <td>
+                            <NavLink class="btn btn-sm btn-info" href="@($"/library-items/details/{item.Id}")">Details</NavLink>
+                            <NavLink class="btn btn-sm btn-warning" href="@($"/library-items/edit/{item.Id}")">Edit</NavLink>
+                            <NavLink class="btn btn-sm btn-danger" href="@($"/library-items/delete/{item.Id}")">Delete</NavLink>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<LibraryItem> items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await Context.LibraryItems.ToListAsync();
+    }
+
+    private string GetItemType(LibraryItem item)
+    {
+        return item switch
+        {
+            Book => "Book",
+            Movie => "Movie",
+            Magazine => "Magazine",
+            _ => "Unknown"
+        };
+    }
+}

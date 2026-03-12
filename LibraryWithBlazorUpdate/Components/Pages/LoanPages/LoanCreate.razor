@@ -1,0 +1,113 @@
+@page "/loans/create"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Create Loan</PageTitle>
+
+<div class="container mt-4">
+    <h1>Create New Loan</h1>
+
+    @if (libraryItems == null || members == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <EditForm Model="newLoan" OnValidSubmit="HandleCreateLoan">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="libraryItemId" class="form-label">Library Item</label>
+                        <InputSelect id="libraryItemId" @bind-Value="newLoan.LibraryItemId" class="form-control">
+                            <option value="">-- Select Item --</option>
+                            @foreach (var item in libraryItems)
+                            {
+                                <option value="@item.Id">@item.title (@item.author)</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="memberId" class="form-label">Member</label>
+                        <InputSelect id="memberId" @bind-Value="newLoan.MemberId" class="form-control">
+                            <option value="">-- Select Member --</option>
+                            @foreach (var member in members)
+                            {
+                                <option value="@member.memberId">@member.memberName</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="loanDate" class="form-label">Loan Date</label>
+                        <InputDate id="loanDate" @bind-Value="newLoan.loanDate" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dueDate" class="form-label">Due Date</label>
+                        <InputDate id="dueDate" @bind-Value="newLoan.dueDate" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <InputCheckbox id="isOverdue" @bind-Value="newLoan.isOverdue" class="form-check-input" />
+                        <label for="isOverdue" class="form-check-label">Is Overdue</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <NavLink class="btn btn-secondary" href="/loans">Back to List</NavLink>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private Loan newLoan = new();
+    private List<LibraryItem> libraryItems;
+    private List<Member> members;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        libraryItems = await Context.LibraryItems.ToListAsync();
+        members = await Context.Members.ToListAsync();
+        newLoan.loanDate = DateTime.Now;
+        newLoan.dueDate = DateTime.Now.AddDays(14);
+    }
+
+    private async Task HandleCreateLoan()
+    {
+        try
+        {
+            var item = await Context.LibraryItems.FindAsync(newLoan.LibraryItemId);
+            var member = await Context.Members.FindAsync(newLoan.MemberId);
+
+            if (item != null && member != null)
+            {
+                var loan = new Loan(item, member, newLoan.loanDate, null);
+                Context.Loans.Add(loan);
+                await Context.SaveChangesAsync();
+                Navigation.NavigateTo("/loans");
+            }
+            else
+            {
+                message = "Invalid item or member selected.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error creating loan: {ex.Message}";
+        }
+    }
+}

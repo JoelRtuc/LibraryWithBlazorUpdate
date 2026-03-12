@@ -1,0 +1,93 @@
+@page "/library-items/edit/{id:int}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Library Item</PageTitle>
+
+<div class="container mt-4">
+    <h1>Edit Library Item</h1>
+
+    @if (item == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <EditForm Model="item" OnValidSubmit="HandleUpdateItem">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <InputText id="title" @bind-Value="item.title" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <InputText id="author" @bind-Value="item.author" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="publishedYear" class="form-label">Published Year</label>
+                        <InputNumber id="publishedYear" @bind-Value="item.publishedYear" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <InputTextArea id="description" @bind-Value="item.description" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <InputCheckbox id="isAvailable" @bind-Value="item.isAvailable" class="form-check-input" />
+                        <label for="isAvailable" class="form-check-label">Is Available</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <NavLink class="btn btn-secondary" href="/library-items">Back to List</NavLink>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private LibraryItem item;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await Context.LibraryItems.FindAsync(Id);
+
+        if (item == null)
+        {
+            message = "Library item not found.";
+        }
+    }
+
+    private async Task HandleUpdateItem()
+    {
+        try
+        {
+            Context.LibraryItems.Update(item);
+            await Context.SaveChangesAsync();
+            Navigation.NavigateTo("/library-items");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error updating item: {ex.Message}";
+        }
+    }
+}

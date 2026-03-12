@@ -1,0 +1,75 @@
+@page "/members/delete/{id}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Delete Member</PageTitle>
+
+<div class="container mt-4">
+    <h1>Delete Member</h1>
+
+    @if (member == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="card border-danger">
+            <div class="card-body">
+                <h5 class="card-title">@member.memberName</h5>
+                <p><strong>ID:</strong> @member.memberId</p>
+                <p><strong>Email:</strong> @member.email</p>
+                <p><strong>Active Loans:</strong> @member.loans.Count</p>
+
+                @if (member.loans.Count > 0)
+                {
+                    <div class="alert alert-warning">Cannot delete member with active loans.</div>
+                }
+
+                <div class="mt-3">
+                    <button class="btn btn-danger" @onclick="HandleDelete" disabled="@(member.loans.Count > 0)">Delete</button>
+                    <NavLink class="btn btn-secondary" href="/members">Cancel</NavLink>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private Member member;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(id))
+        {
+            member = await Context.Members
+                .Include(m => m.loans)
+                .FirstOrDefaultAsync(m => m.memberId == id);
+        }
+    }
+
+    private async Task HandleDelete()
+    {
+        try
+        {
+            if (member != null && member.loans.Count == 0)
+            {
+                Context.Members.Remove(member);
+                await Context.SaveChangesAsync();
+                Navigation.NavigateTo("/members");
+            }
+        }
+        catch (Exception ex)
+        {
+            // log or show error
+        }
+    }
+}

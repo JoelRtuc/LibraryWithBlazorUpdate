@@ -1,0 +1,100 @@
+@page "/library-items/details/{id:int}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Library Item Details</PageTitle>
+
+<div class="container mt-4">
+    <h1>Library Item Details</h1>
+
+    @if (item == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.title</h5>
+                        <hr />
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Author:</strong></div>
+                            <div class="col-sm-8">@item.author</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Published Year:</strong></div>
+                            <div class="col-sm-8">@item.publishedYear</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Available:</strong></div>
+                            <div class="col-sm-8">@(item.isAvailable ? "Yes" : "No")</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Description:</strong></div>
+                            <div class="col-sm-8">@item.description</div>
+                        </div>
+
+                        @if (item is Book book)
+                        {
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>ISBN:</strong></div>
+                                <div class="col-sm-8">@book.ISBN</div>
+                            </div>
+                        }
+                        else if (item is Movie movie)
+                        {
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Duration (minutes):</strong></div>
+                                <div class="col-sm-8">@movie.Duration</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Type:</strong></div>
+                                <div class="col-sm-8">@movie.type</div>
+                            </div>
+                        }
+                        else if (item is Magazine magazine)
+                        {
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Issue:</strong></div>
+                                <div class="col-sm-8">@magazine.issue</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Company:</strong></div>
+                                <div class="col-sm-8">@magazine.company</div>
+                            </div>
+                        }
+
+                        <div class="mt-4">
+                            <NavLink class="btn btn-warning" href="@($"/library-items/edit/{item.Id}")">Edit</NavLink>
+                            <NavLink class="btn btn-danger" href="@($"/library-items/delete/{item.Id}")">Delete</NavLink>
+                            <NavLink class="btn btn-secondary" href="/library-items">Back to List</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private LibraryItem item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await Context.LibraryItems.FindAsync(Id);
+    }
+}

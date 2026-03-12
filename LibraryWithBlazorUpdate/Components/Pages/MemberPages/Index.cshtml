@@ -1,0 +1,48 @@
+@page
+@model LibraryWithBlazorUpdate.Components_Pages_MemberPages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Member[0].memberName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Member[0].email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Member[0].memberSince)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Member) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.memberName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.memberSince)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.memberId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.memberId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.memberId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

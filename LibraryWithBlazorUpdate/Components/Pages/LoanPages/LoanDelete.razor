@@ -1,0 +1,89 @@
+@page "/loans/delete/{id:int}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Delete Loan</PageTitle>
+
+<div class="container mt-4">
+    <h1>Delete Loan</h1>
+    <h3>Are you sure you want to delete this loan?</h3>
+
+    @if (loan == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Library Item:</strong></div>
+                            <div class="col-sm-8">@loan.item?.title</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Member:</strong></div>
+                            <div class="col-sm-8">@loan.member?.memberName</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Loan Date:</strong></div>
+                            <div class="col-sm-8">@loan.loanDate.ToShortDateString()</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Due Date:</strong></div>
+                            <div class="col-sm-8">@loan.dueDate.ToShortDateString()</div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-danger" @onclick="HandleDeleteLoan">Delete</button>
+                            <NavLink class="btn btn-secondary" href="/loans">Cancel</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Loan loan;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        loan = await Context.Loans
+            .Include(l => l.item)
+            .Include(l => l.member)
+            .FirstOrDefaultAsync(l => l.Id == Id);
+    }
+
+    private async Task HandleDeleteLoan()
+    {
+        try
+        {
+            if (loan != null)
+            {
+                Context.Loans.Remove(loan);
+                await Context.SaveChangesAsync();
+                Navigation.NavigateTo("/loans");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error deleting loan: {ex.Message}";
+        }
+    }
+}

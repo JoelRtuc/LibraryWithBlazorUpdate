@@ -1,0 +1,106 @@
+@page "/loans/edit/{id:int}"
+@rendermode InteractiveServer
+
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject LibraryWithBlazorUpdateContext Context
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Loan</PageTitle>
+
+<div class="container mt-4">
+    <h1>Edit Loan</h1>
+
+    @if (loan == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <EditForm Model="loan" OnValidSubmit="HandleUpdateLoan">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label class="form-label">Library Item</label>
+                        <p class="form-control-plaintext">@loan.item?.title</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Member</label>
+                        <p class="form-control-plaintext">@loan.member?.memberName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="loanDate" class="form-label">Loan Date</label>
+                        <InputDate id="loanDate" @bind-Value="loan.loanDate" class="form-control" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dueDate" class="form-label">Due Date</label>
+                        <InputDate id="dueDate" @bind-Value="loan.dueDate" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="returnDate" class="form-label">Return Date</label>
+                        <InputDate id="returnDate" @bind-Value="loan.returnDate" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <InputCheckbox id="isReturned" @bind-Value="loan.isReturned" class="form-check-input" />
+                        <label for="isReturned" class="form-check-label">Is Returned</label>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <InputCheckbox id="isOverdue" @bind-Value="loan.isOverdue" class="form-check-input" />
+                        <label for="isOverdue" class="form-check-label">Is Overdue</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <NavLink class="btn btn-secondary" href="/loans">Back to List</NavLink>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Loan loan;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        loan = await Context.Loans
+            .Include(l => l.item)
+            .Include(l => l.member)
+            .FirstOrDefaultAsync(l => l.Id == Id);
+
+        if (loan == null)
+        {
+            message = "Loan not found.";
+        }
+    }
+
+    private async Task HandleUpdateLoan()
+    {
+        try
+        {
+            Context.Loans.Update(loan);
+            await Context.SaveChangesAsync();
+            Navigation.NavigateTo("/loans");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error updating loan: {ex.Message}";
+        }
+    }
+}
