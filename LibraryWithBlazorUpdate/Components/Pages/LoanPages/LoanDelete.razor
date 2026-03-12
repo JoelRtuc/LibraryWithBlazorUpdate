@@ -76,6 +76,7 @@
         {
             if (loan != null)
             {
+                loan.item.isAvailable = true; // Mark the item as available again
                 Context.Loans.Remove(loan);
                 await Context.SaveChangesAsync();
                 Navigation.NavigateTo("/loans");
