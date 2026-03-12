@@ -1,7 +1,74 @@
 ﻿@page "/"
+@using LibraryWithBlazorUpdate.Data
+@using LibraryWithBlazorUpdate.Components.Models
+@using Microsoft.EntityFrameworkCore
+@inject LibraryWithBlazorUpdateContext Context
+@attribute [StreamRendering]
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Library</h1>
 
-Welcome to your new app.
+<h2>books, members loans:</h2> 
+
+@if (items == null || members == null || loans == null)
+{
+	<p><em>Loading...</em></p>
+}
+else if (items.Count == 0)
+{
+	<p><em>There are no items to loan :/</em></p>
+}
+else
+{
+	@foreach (var item in items)
+	{
+		<div style ="border: 1px solid black;">
+			<p>
+				Title:
+				@item.title
+			</p>
+			<p>
+				Author:
+				@item.author
+			</p>
+			<p>
+				Published Year:
+				@item.publishedYear
+			</p>
+			<p>
+				Available:
+				@(item.isAvailable ? "Yes" : "No")
+			</p>
+			<p>
+				Type:
+				@GetItemType(item)
+			</p>
+		</div>	
+	}
+}
+
+
+@code {
+	List<LibraryItem> items;
+	List<Loan> loans;
+	List<Member> members;
+
+	protected override void OnInitialized()
+	{
+		items = Context.LibraryItems.ToList();
+		loans = Context.Loans.ToList();
+		members = Context.Members.ToList();
+	}
+
+	private string GetItemType(LibraryItem item)
+	{
+		return item switch
+		{
+			Book => "Book",
+			Movie => "Movie",
+			Magazine => "Magazine",
+			_ => "Unknown"
+		};
+	}
+}
