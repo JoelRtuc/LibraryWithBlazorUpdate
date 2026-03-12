@@ -11,7 +11,7 @@ namespace LibraryWithBlazorUpdate.Components.Models
         public string memberName { get; set; }
         public string email { get; set; }
         public DateTime memberSince { get; set; }
-        public List<Loan> loans { get; set; }
+        public List<Loan> loans { get; set; } = new List<Loan>();
 
         public Member() { }
 

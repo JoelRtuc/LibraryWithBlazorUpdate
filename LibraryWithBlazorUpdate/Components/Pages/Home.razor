@@ -15,36 +15,75 @@
 {
 	<p><em>Loading...</em></p>
 }
-else if (items.Count == 0)
+else if (items.Count == 0 && loans.Count == 0 && members.Count > 0)
 {
-	<p><em>There are no items to loan :/</em></p>
+	<p><em>There is nothing to see here :/</em></p>
 }
 else
 {
-	@foreach (var item in items)
+	if (members.Count > 0)
 	{
-		<div style ="border: 1px solid black;">
-			<p>
+		<h3>Members:</h3>
+		@foreach (var member in members)
+		{
+			<div style ="border: 1px solid black;">
+				Name:
+				@member.memberName
+				| Email:
+				@member.email
+				| Member Since:
+				@member.memberSince.ToShortDateString()
+				| Loans Count:
+				@member.loans.Count
+			</div>	
+		}
+	}
+
+	if(loans.Count > 0)
+	{
+		<h3>Loans:</h3>
+		@foreach (var loan in loans)
+		{
+			<div style ="border: 1px solid black;">
+				Item:
+				@loan.item?.title
+				| Member:
+				@loan.member?.memberName
+				| Loan Date:
+				@loan.loanDate.ToShortDateString()
+				| Due Date:
+				@loan.dueDate.ToShortDateString()
+				| Return Date:
+				@(loan.returnDate?.ToShortDateString() ?? "Not returned")
+				| Is Returned:
+				@(loan.isReturned ? "Yes" : "No")
+			</div>	
+		}
+	}
+
+	if(items.Count > 0)
+	{
+		<h3>Books, movies and other library items:</h3>
+		@foreach (var item in items)
+		{
+			<div style="border: 1px solid black;">
 				Title:
 				@item.title
-			</p>
-			<p>
-				Author:
+
+				| Author:
 				@item.author
-			</p>
-			<p>
-				Published Year:
+
+				| Published Year:
 				@item.publishedYear
-			</p>
-			<p>
-				Available:
+
+				| Available:
 				@(item.isAvailable ? "Yes" : "No")
-			</p>
-			<p>
-				Type:
+
+				| Type:
 				@GetItemType(item)
-			</p>
-		</div>	
+
+			</div>
+		}
 	}
 }
 

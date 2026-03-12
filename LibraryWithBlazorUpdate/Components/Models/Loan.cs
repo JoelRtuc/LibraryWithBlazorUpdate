@@ -38,11 +38,15 @@ namespace LibraryWithBlazorUpdate.Components.Models
                 member.loans.Add(this);
                 MemberId = member.memberId;
             }
-            if (item != null)
+            if (item != null && item.isAvailable)
             {
                 LibraryItemId = item.Id;
                 item.loans.Add(this);
                 item.isAvailable = false;
+            }
+            else if(!item.isAvailable)
+            {
+                throw new InvalidOperationException("Item is not available for loan.");
             }
 
             this.loanDate = loanDate;

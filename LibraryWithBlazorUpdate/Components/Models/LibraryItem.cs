@@ -19,7 +19,7 @@ namespace LibraryWithBlazorUpdate.Components.Models
         public bool isAvailable { get; set; }
 
         // navigation: one item can have many loans
-        public virtual ICollection<Loan> loans { get; set; }
+        public virtual List<Loan> loans { get; set; } = new List<Loan>();
 
         public LibraryItem() { }
 
