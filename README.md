@@ -70,7 +70,10 @@ dotnet test --list-tests
 - All tests are isolated and can run independently
 - Follow AAA pattern: Arrange ? Act ? Assert
 
-## Screenshots if they can't be opened check the files
+## Screenshots if they can't be opened check the files, Schema diagram too
 
 ![alt text](<Skärmbild 2026-03-13 150459.png>)
 ![alt text](<Skärmbild 2026-03-13 150507.png>)
+![alt text](<Skärmbild 2026-03-13 161721.png>)
+![alt text](<Skärmbild 2026-03-13 161735.png>)
+![alt text](<Skärmbild 2026-03-13 161824.png>)
