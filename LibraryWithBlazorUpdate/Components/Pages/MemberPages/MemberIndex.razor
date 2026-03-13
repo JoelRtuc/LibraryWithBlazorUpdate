@@ -10,6 +10,16 @@
 
 <PageTitle>Members</PageTitle>
 
+<div>
+    <p>
+        Search:
+    </p>
+    <InputText @bind-Value="searchTerm" />
+    <p>
+        @searchTerm
+    </p>
+</div>
+
 <div class="container mt-4">
     <h1>Members</h1>
     <p>
@@ -40,18 +50,21 @@
             <tbody>
                 @foreach (var member in members)
                 {
-                    <tr>
-                        <td>@member.memberId</td>
-                        <td>@member.memberName</td>
-                        <td>@member.email</td>
-                        <td>@member.memberSince.ToShortDateString()</td>
-                        <td>@member.loans.Count</td>
-                        <td>
-                            <NavLink class="btn btn-sm btn-info" href="@($"/members/details/{member.memberId}")">Details</NavLink>
-                            <NavLink class="btn btn-sm btn-warning" href="@($"/members/edit/{member.memberId}")">Edit</NavLink>
-                            <NavLink class="btn btn-sm btn-danger" href="@($"/members/delete/{member.memberId}")">Delete</NavLink>
-                        </td>
-                    </tr>
+                    if (searchTerm == string.Empty || member.Matches(searchTerm))
+                    {
+                        <tr>
+                            <td>@member.memberId</td>
+                            <td>@member.memberName</td>
+                            <td>@member.email</td>
+                            <td>@member.memberSince.ToShortDateString()</td>
+                            <td>@member.loans.Count</td>
+                            <td>
+                                <NavLink class="btn btn-sm btn-info" href="@($"/members/details/{member.memberId}")">Details</NavLink>
+                                <NavLink class="btn btn-sm btn-warning" href="@($"/members/edit/{member.memberId}")">Edit</NavLink>
+                                <NavLink class="btn btn-sm btn-danger" href="@($"/members/delete/{member.memberId}")">Delete</NavLink>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -60,6 +73,7 @@
 
 @code {
     private List<Member> members;
+	private string searchTerm = "";
 
     protected override async Task OnInitializedAsync()
     {

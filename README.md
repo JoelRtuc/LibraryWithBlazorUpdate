@@ -1,4 +1,19 @@
-# LibraryWithBlazorUpdate.Tests
+# LibraryWithBlazorUpdate And Tests
+
+## Integration and Database
+
+- **This project uses a dbContext class to communicate with a database, it has a connection string and uses migrations to convert c# into SQL**
+- **This project uses EntityFrameworksCore for integration**
+
+## Usage
+
+- **Open Files and run**
+- **Blazor app will oven with interactive server**
+- **Navigate Left Menu to find Library items, Loans, Members**
+- **You can loan in the loan tab**
+- **Or you can loan directly in the library items list or in the indevidual edit page**
+- **You can return it the same way as loading, a return button will appear if the item is available, No admin privleges**
+- **In loan tab press delete to return**
 
 Comprehensive test suite for the Library Management Blazor application using **xUnit**, **bUnit**, and **Moq**.
 
@@ -8,27 +23,14 @@ Comprehensive test suite for the Library Management Blazor application using **x
 Unit tests for models and business logic:
 
 - **LibraryItemTests.cs** - LibraryItem model tests
-- **BookTests.cs** - Book model tests
-- **MovieTests.cs** - Movie model tests
-- **MagazineTests.cs** - Magazine model tests
 - **MemberTests.cs** - Member model tests
 - **LoanTests.cs** - Loan model tests
-- **ClassManagerTests.cs** - ClassManager business logic tests
-
-### Components/
-Blazor component tests using bUnit:
-
-- **LibraryItemIndexComponentTests.cs** - Library items list component
-- **LibraryItemCreateComponentTests.cs** - Create library item component
-- **MemberIndexComponentTests.cs** - Members list component
-- **MemberCreateComponentTests.cs** - Create member component
-- **LoanIndexComponentTests.cs** - Loans list component
 
 ### Integration/
 Integration tests with database:
 
 - **DbContextTests.cs** - Entity Framework Core DbContext tests
-- **LoanIntegrationTests.cs** - Loan creation/deletion integration tests
+- **EFIntegrationTests.cs** - Loan creation/deletion integration tests
 
 ## Running Tests
 
@@ -52,10 +54,6 @@ List all available tests:
 dotnet test --list-tests
 ```
 
-## Test Status
-
-All test functions are marked with **EMPTY** and ready for implementation. Each test follows the **AAA pattern** (Arrange, Act, Assert).
-
 ## Dependencies
 
 - **xunit** - Test framework
@@ -70,3 +68,8 @@ All test functions are marked with **EMPTY** and ready for implementation. Each 
 - Integration tests use Entity Framework Core InMemory database
 - All tests are isolated and can run independently
 - Follow AAA pattern: Arrange ? Act ? Assert
+
+## Screenshots if they can't be opened check the files
+
+![alt text](<Skärmbild 2026-03-13 150459.png>)
+![alt text](<Skärmbild 2026-03-13 150507.png>)

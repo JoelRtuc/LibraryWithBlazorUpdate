@@ -53,6 +53,14 @@
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Update</button>
                         <NavLink class="btn btn-secondary" href="/library-items">Back to List</NavLink>
+                        @if (item.isAvailable)
+                        {
+                            <NavLink class="btn btn-sm btn-success" href="@($"/loans/create?libraryItemId={item.Id}")">Loan</NavLink>
+                        }
+                        else
+                        {
+                            <NavLink class="btn btn-sm btn-danger" href="@($"/loans/delete?libraryItemId={item.Id}")">Return</NavLink>
+                        }
                     </div>
                 </EditForm>
             </div>

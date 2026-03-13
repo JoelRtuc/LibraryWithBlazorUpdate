@@ -10,6 +10,16 @@
 
 <PageTitle>Library Items</PageTitle>
 
+<div>
+    <p>
+        Search:
+    </p>
+    <InputText @bind-Value="searchTerm"/>
+    <p>
+        @searchTerm
+    </p>
+</div>
+
 <div class="container mt-4">
     <h1>Library Items</h1>
     <p>
@@ -34,11 +44,12 @@
                     <th>Published Year</th>
                     <th>Available</th>
                     <th>Type</th>
+                    <th>Loan History</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in items)
+                @foreach (var item in items.Where(p => p.Matches(searchTerm) || searchTerm == string.Empty).OrderBy(p => p.title))
                 {
                     <tr>
                         <td>@item.title</td>
@@ -46,10 +57,20 @@
                         <td>@item.publishedYear</td>
                         <td>@(item.isAvailable ? "Yes" : "No")</td>
                         <td>@GetItemType(item)</td>
+                        <td>@item.loans.Count</td>
                         <td>
                             <NavLink class="btn btn-sm btn-info" href="@($"/library-items/details/{item.Id}")">Details</NavLink>
                             <NavLink class="btn btn-sm btn-warning" href="@($"/library-items/edit/{item.Id}")">Edit</NavLink>
                             <NavLink class="btn btn-sm btn-danger" href="@($"/library-items/delete/{item.Id}")">Delete</NavLink>
+                            @if(item.isAvailable)
+                            {
+                                <NavLink class="btn btn-sm btn-success" href="@($"/loans/create?libraryItemId={item.Id}")">Loan</NavLink>
+                            }
+                            else
+                            {
+                                <NavLink class="btn btn-sm btn-danger" href="@($"/loans/delete?libraryItemId={item.Id}")">Return</NavLink>
+
+                            }
                         </td>
                     </tr>
                 }
@@ -60,6 +81,7 @@
 
 @code {
     private List<LibraryItem> items;
+    string searchTerm = "";
 
     protected override async Task OnInitializedAsync()
     {

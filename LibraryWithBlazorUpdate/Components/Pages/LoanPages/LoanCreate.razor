@@ -73,6 +73,8 @@
 </div>
 
 @code {
+    [SupplyParameterFromQuery]
+    int libraryItemId { get; set; }
     private Loan newLoan = new();
     private List<LibraryItem> libraryItems;
     private List<Member> members;
@@ -84,6 +86,10 @@
         members = await Context.Members.ToListAsync();
         newLoan.loanDate = DateTime.Now;
         newLoan.dueDate = DateTime.Now.AddDays(14);
+
+        if (libraryItemId != 0)
+            newLoan.item = libraryItems.FirstOrDefault(i => i.Id == libraryItemId);
+        
     }
 
     private async Task HandleCreateLoan()
