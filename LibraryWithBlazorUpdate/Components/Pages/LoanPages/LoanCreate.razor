@@ -88,7 +88,7 @@
         newLoan.dueDate = DateTime.Now.AddDays(14);
 
         if (libraryItemId != 0)
-            newLoan.item = libraryItems.FirstOrDefault(i => i.Id == libraryItemId);
+            newLoan.LibraryItemId = libraryItemId; 
         
     }
 

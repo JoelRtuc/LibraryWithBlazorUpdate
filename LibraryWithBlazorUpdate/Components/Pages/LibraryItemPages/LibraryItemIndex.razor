@@ -68,7 +68,15 @@
                             }
                             else
                             {
-                                <NavLink class="btn btn-sm btn-danger" href="@($"/loans/delete?libraryItemId={item.Id}")">Return</NavLink>
+                                int index = 0;
+                                foreach (Loan loan in item.loans)
+                                {
+                                    if (loan.LibraryItemId == item.Id)
+                                    {
+                                        index = loan.Id;
+                                    }
+                                }
+                                <NavLink class="btn btn-sm btn-danger" href="@($"/loans/delete/{index}")">Return</NavLink>
 
                             }
                         </td>
