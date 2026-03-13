@@ -2,17 +2,17 @@
 
 ## Integration and Database
 
-- **This project uses a dbContext class to communicate with a database, it has a connection string and uses migrations to convert c# into SQL**
+- **This project uses a dbContext class to communicate with a database, it has a connection string and uses migrations to convert c# into SQL, DbFactory also created and used**
 - **This project uses EntityFrameworksCore for integration**
 
 ## Usage
 
 - **Open Files and run**
-- **Blazor app will oven with interactive server**
+- **Blazor app will open with interactive server**
 - **Navigate Left Menu to find Library items, Loans, Members**
 - **You can loan in the loan tab**
-- **Or you can loan directly in the library items list or in the indevidual edit page**
-- **You can return it the same way as loading, a return button will appear if the item is available, No admin privleges**
+- **Or you can loan directly in the library items list or in the individual edit page**
+- **You can return it the same way as loading, a return button will appear if the item is available, No admin privileges**
 - **In loan tab press delete to return**
 - **In all edit pages you can CRUD**
 
