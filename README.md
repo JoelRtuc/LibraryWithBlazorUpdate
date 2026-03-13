@@ -14,6 +14,7 @@
 - **Or you can loan directly in the library items list or in the indevidual edit page**
 - **You can return it the same way as loading, a return button will appear if the item is available, No admin privleges**
 - **In loan tab press delete to return**
+- **In all edit pages you can CRUD**
 
 Comprehensive test suite for the Library Management Blazor application using **xUnit**, **bUnit**, and **Moq**.
 
