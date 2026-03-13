@@ -35,6 +35,7 @@
                     <th>Due Date</th>
                     <th>Return Date</th>
                     <th>Is Returned</th>
+                    <th>Is Overdue</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -48,6 +49,7 @@
                         <td>@loan.dueDate.ToShortDateString()</td>
                         <td>@(loan.returnDate?.ToShortDateString() ?? "Not returned")</td>
                         <td>@(loan.isReturned ? "Yes" : "No")</td>
+                        <td>@(loan.isOverdue ? "Yes" : "No")</td>
                         <td>
                             <NavLink class="btn btn-sm btn-info" href="@($"/loans/details/{loan.Id}")">Details</NavLink>
                             <NavLink class="btn btn-sm btn-warning" href="@($"/loans/edit/{loan.Id}")">Edit</NavLink>
